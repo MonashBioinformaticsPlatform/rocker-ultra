@@ -4,7 +4,7 @@
 #
 # TODO:
 #  - Set the LC_* environment variables to suppress warnings in Rstudio console
-#  - Use an actually writable common Singularity cache somewhere to share images between users 
+#  - Use an actually writable common Singularity cache somewhere to share images between users
 #    (current setup has permissions issue).
 #  - Determine why laptop -> login-node -> compute-node SSH forwarding isn't working (sshd_config ?)
 #  - Allow srun/sbatch from within the container.
@@ -21,7 +21,13 @@ IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.1-4.0.4}
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
 PORT=${RSTUDIO_PORT:-8787}
-export PASSWORD=$(openssl rand -base64 15)
+
+# Create a new password, or use whatever password is passed in the environment
+if [ -z "$PASSWORD" ]; then
+  PASSWORD=$(openssl rand -base64 15)
+fi
+export PASSWORD
+
 SINGULARITY_VERSION=3.7.1
 # Use a shared cache location if unspecified
 # export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
@@ -37,7 +43,7 @@ fi
 function get_port {
     # lsof doesn't return open ports for system services, so we use netstat
     # until ! lsof -i -P -n | grep -qc ':'${PORT}' (LISTEN)';
-    
+
     until ! netstat -ln | grep "  LISTEN  " | grep -iEo  ":[0-9]+" | cut -d: -f2 | grep -wqc ${PORT};
     do
         ((PORT++))
