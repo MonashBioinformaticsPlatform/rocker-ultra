@@ -29,7 +29,7 @@ fi
 PORT=${RSTUDIO_PORT:-8787}
 
 # Create a new password, or use whatever password is passed in the environment
-if [ -z "$PASSWORD" ]; then
+if [[ -z "$PASSWORD" ]]; then
   PASSWORD=$(openssl rand -base64 15)
 fi
 export PASSWORD
