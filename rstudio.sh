@@ -53,7 +53,7 @@ function get_port {
 }
 
 # try to load a singularity module, just in case we need to
-module load singularity/${SINGULARITY_VERSION} || true
+(module load singularity/${SINGULARITY_VERSION} || true) 2>/dev/null
 
 IMAGE_SLASHED=$(echo $IMAGE | sed 's/:/\//g')
 RSTUDIO_HOME=${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/session
