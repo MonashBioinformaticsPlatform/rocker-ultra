@@ -66,12 +66,14 @@ RSTUDIO_HOME="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/session"
 RSTUDIO_TMP="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/tmp"
 # RSITELIB="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/site-library"
 R_LIBS_USER="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}"
+R_ENV_CACHE="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/renv-local"
 #mkdir -p ${HOME}/.rstudio
 mkdir -p "${RSTUDIO_HOME}"
 #mkdir -p "${RSITELIB}"
 mkdir -p "${R_LIBS_USER}"
 mkdir -p "${RSTUDIO_TMP}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
+mkdir -p "${R_ENV_CACHE}"
 
 
 echo "Getting required containers ... this may take a while ..."
@@ -140,6 +142,7 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
+                     --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
                      --bind /scratch:/scratch \
                      --bind /projects:/projects \
                      --writable-tmpfs \
@@ -155,6 +158,7 @@ else
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
+                     --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
                      --env R_LIBS_USER="${R_LIBS_USER}" \
                      "${IMAGE_LOCATION}" \
                      rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}"
