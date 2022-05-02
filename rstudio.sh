@@ -100,7 +100,7 @@ get_port
 
 LOCALPORT=${PORT}
 # LOCALPORT=8787
-PUBLIC_IP=$(curl https://checkip.amazonaws.com)
+PUBLIC_IP=$(curl --silent https://checkip.amazonaws.com)
 
 echo "On you local machine, open an SSH tunnel like:"
 # echo "  ssh -N -L ${LOCALPORT}:localhost:${PORT} ${USER}@m3-bio1.erc.monash.edu.au"
