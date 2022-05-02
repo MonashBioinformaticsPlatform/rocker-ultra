@@ -50,7 +50,7 @@ function get_port {
     # lsof doesn't return open ports for system services, so we use netstat
     # until ! lsof -i -P -n | grep -qc ':'${PORT}' (LISTEN)';
 
-    until ! netstat -ln | grep "  LISTEN  " | grep -iEo  ":[0-9]+" | cut -d: -f2 | grep -wqc ${PORT};
+    until ! netstat -ln | grep "  LISTEN  " | grep -iEo  ":[0-9]+" | cut -d: -f2 | grep -wqc "${PORT}";
     do
         ((PORT++))
         echo "Checking port: ${PORT}"
@@ -61,17 +61,17 @@ function get_port {
 # try to load a singularity module, just in case we need to
 (module load singularity/${SINGULARITY_VERSION} || true) 2>/dev/null
 
-IMAGE_SLASHED=$(echo $IMAGE | sed 's/:/\//g')
-RSTUDIO_HOME=${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/session
-RSTUDIO_TMP=${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/tmp
-# RSITELIB=${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/site-library
-R_LIBS_USER=${HOME}/.rstudio-rocker/${IMAGE_SLASHED}
+IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g')
+RSTUDIO_HOME="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/session"
+RSTUDIO_TMP="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/tmp"
+# RSITELIB="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/site-library"
+R_LIBS_USER="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}"
 #mkdir -p ${HOME}/.rstudio
-mkdir -p ${RSTUDIO_HOME}
-#mkdir -p ${RSITELIB}
-mkdir -p ${R_LIBS_USER}
-mkdir -p ${RSTUDIO_TMP}
-mkdir -p ${RSTUDIO_TMP}/var/run
+mkdir -p "${RSTUDIO_HOME}"
+#mkdir -p "${RSITELIB}"
+mkdir -p "${R_LIBS_USER}"
+mkdir -p "${RSTUDIO_TMP}"
+mkdir -p "${RSTUDIO_TMP}/var/run"
 
 
 echo "Getting required containers ... this may take a while ..."
@@ -84,13 +84,13 @@ if [[ $HPC_ENV == "m3" ]]; then
     #                               module load singularity/${SINGULARITY_VERSION} && \
     #                               singularity test docker://${IMAGE}"
     module load singularity/${SINGULARITY_VERSION}
-    singularity test ${IMAGE_LOCATION}
+    singularity test "${IMAGE_LOCATION}"
 elif [[ "$IMAGE" =~ ^\. ]]; then
     # Don't need pull local image
-    singularity test ${IMAGE_LOCATION}
+    singularity test "${IMAGE_LOCATION}"
 else
     # pull to ensure we have the image cached
-    singularity pull ${IMAGE_LOCATION}
+    singularity pull "${IMAGE_LOCATION}"
 fi
 
 
@@ -127,36 +127,38 @@ echo "Starting RStudio Server (R version from image ${IMAGE})"
 LC_CTYPE="C"
 LC_TIME="C"
 LC_MONETARY="C"
+# shellcheck disable=SC2034
 LC_PAPER="C"
+# shellcheck disable=SC2034
 LC_MEASUREMENT="C"
 
 if [[ $HPC_ENV == 'm3' ]]; then
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind ${HOME}:/home/rstudio \
-                     --bind ${RSTUDIO_HOME}:${HOME}/.rstudio \
-                     --bind ${R_LIBS_USER}:${R_LIBS_USER} \
-                     --bind ${RSTUDIO_TMP}:/tmp \
-                     --bind=${RSTUDIO_TMP}/var:/var/lib/rstudio-server \
-                     --bind=${RSTUDIO_TMP}/var/run:/var/run/rstudio-server \
+    singularity exec --bind "${HOME}:/home/rstudio" \
+                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+                     --bind "${R_LIBS_USER}:${R_LIBS_USER}" \
+                     --bind "${RSTUDIO_TMP}:/tmp" \
+                     --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
+                     --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
                      --bind /scratch:/scratch \
                      --bind /projects:/projects \
                      --writable-tmpfs \
-                     --env R_LIBS_USER=${R_LIBS_USER} \
-                     ${IMAGE_LOCATION} \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port=${PORT}
+                     --env "R_LIBS_USER=${R_LIBS_USER}" \
+                     "${IMAGE_LOCATION}" \
+                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}"
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind ${HOME}:/home/rstudio \
-                     --bind ${RSTUDIO_HOME}:${HOME}/.rstudio \
-                     --bind ${R_LIBS_USER}:${R_LIBS_USER} \
-                     --bind ${RSTUDIO_TMP}:/tmp \
-                     --bind=${RSTUDIO_TMP}/var:/var/lib/rstudio-server \
-                     --bind=${RSTUDIO_TMP}/var/run:/var/run/rstudio-server \
-                     --env R_LIBS_USER=${R_LIBS_USER} \
-                     ${IMAGE_LOCATION} \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port=${PORT}
-                     # --bind ${RSITELIB}:/usr/local/lib/R/site-library \
+    singularity exec --bind "${HOME}:/home/rstudio" \
+                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+                     --bind "${R_LIBS_USER}:${R_LIBS_USER}" \
+                     --bind "${RSTUDIO_TMP}:/tmp" \
+                     --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
+                     --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
+                     --env R_LIBS_USER="${R_LIBS_USER}" \
+                     "${IMAGE_LOCATION}" \
+                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}"
+                     # --bind "${RSITELIB}:/usr/local/lib/R/site-library" \
 fi
 
 printf 'rserver exited' 1>&2
