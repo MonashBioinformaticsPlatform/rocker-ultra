@@ -34,7 +34,7 @@ if [ -z "$PASSWORD" ]; then
 fi
 export PASSWORD
 
-SINGULARITY_VERSION=3.7.1
+SINGULARITY_VERSION=3.9.2
 # Use a shared cache location if unspecified
 # export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
 
