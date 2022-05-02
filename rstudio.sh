@@ -22,7 +22,7 @@ IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.1-4.0.4}
 
 PORT=${RSTUDIO_PORT:-8787}
 export PASSWORD=$(openssl rand -base64 15)
-SINGULARITY_VERSION=3.7.1
+SINGULARITY_VERSION=3.9.2
 # Use a shared cache location if unspecified
 # export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
 
