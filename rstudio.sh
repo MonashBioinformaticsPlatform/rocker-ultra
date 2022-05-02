@@ -16,9 +16,15 @@
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
 IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.1-4.0.4}
-
 # You can uncomment this if you've like vanilla rocker/rstudio
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
+
+# Fully qualify the image location if not specified
+if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^\. ]]; then
+  IMAGE_LOCATION=$IMAGE
+else
+  IMAGE_LOCATION="docker://$IMAGE"
+fi
 
 PORT=${RSTUDIO_PORT:-8787}
 
@@ -78,10 +84,13 @@ if [[ $HPC_ENV == "m3" ]]; then
     #                               module load singularity/${SINGULARITY_VERSION} && \
     #                               singularity test docker://${IMAGE}"
     module load singularity/${SINGULARITY_VERSION}
-    singularity test docker://${IMAGE}
+    singularity test ${IMAGE_LOCATION}
+elif [[ "$IMAGE" =~ ^\. ]]; then
+    # Don't need pull local image
+    singularity test ${IMAGE_LOCATION}
 else
     # pull to ensure we have the image cached
-    singularity pull docker://${IMAGE}
+    singularity pull ${IMAGE_LOCATION}
 fi
 
 
@@ -133,7 +142,7 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind /projects:/projects \
                      --writable-tmpfs \
                      --env R_LIBS_USER=${R_LIBS_USER} \
-                     docker://${IMAGE} \
+                     ${IMAGE_LOCATION} \
                      rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port=${PORT}
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
@@ -145,7 +154,7 @@ else
                      --bind=${RSTUDIO_TMP}/var:/var/lib/rstudio-server \
                      --bind=${RSTUDIO_TMP}/var/run:/var/run/rstudio-server \
                      --env R_LIBS_USER=${R_LIBS_USER} \
-                     docker://${IMAGE} \
+                     ${IMAGE_LOCATION} \
                      rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port=${PORT}
                      # --bind ${RSITELIB}:/usr/local/lib/R/site-library \
 fi
