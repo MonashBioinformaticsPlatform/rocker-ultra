@@ -58,20 +58,15 @@ function get_port {
     echo "Got one !"
 }
 
-# try to load a singularity module, just in case we need to
-(module load singularity/${SINGULARITY_VERSION} || true) 2>/dev/null
-
-IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g')
-RSTUDIO_HOME="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/session"
-RSTUDIO_TMP="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/tmp"
-# RSITELIB="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/site-library"
-R_LIBS_USER="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}"
-R_ENV_CACHE="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/renv-local"
-#mkdir -p ${HOME}/.rstudio
+# Make a dir name from the IMAGE
+IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
+R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/"
+RSTUDIO_HOME="${R_DIRS}/session"
+RSTUDIO_TMP="${R_DIRS}/tmp"
+R_LIBS_USER="${R_DIRS}/R"
+R_ENV_CACHE="${R_DIRS}/renv-local"
 mkdir -p "${RSTUDIO_HOME}"
-#mkdir -p "${RSITELIB}"
 mkdir -p "${R_LIBS_USER}"
-mkdir -p "${RSTUDIO_TMP}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
 mkdir -p "${R_ENV_CACHE}"
 
@@ -130,33 +125,28 @@ LC_MEASUREMENT="C"
 
 if [[ $HPC_ENV == 'm3' ]]; then
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind "${HOME}:/home/rstudio" \
-                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
-                     --bind "${R_LIBS_USER}:${R_LIBS_USER}" \
+    singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
                      --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
+                     --bind "${R_LIBS_USER}:${HOME}/R" \
                      --bind /scratch:/scratch \
                      --bind /projects:/projects \
                      --writable-tmpfs \
-                     --env "R_LIBS_USER=${R_LIBS_USER}" \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}"
+                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind "${HOME}:/home/rstudio" \
-                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
-                     --bind "${R_LIBS_USER}:${R_LIBS_USER}" \
+    singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
                      --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
-                     --env R_LIBS_USER="${R_LIBS_USER}" \
+                     --bind "${R_LIBS_USER}:${HOME}/R" \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}"
-                     # --bind "${RSITELIB}:/usr/local/lib/R/site-library" \
+                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
 fi
 
 printf 'rserver exited' 1>&2
