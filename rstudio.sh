@@ -20,7 +20,7 @@ IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.1-4.0.4}
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
 # Fully qualify the image location if not specified
-if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^\. ]]; then
+if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^\.|^/ ]]; then
   IMAGE_LOCATION=$IMAGE
 else
   IMAGE_LOCATION="docker://$IMAGE"
@@ -75,10 +75,6 @@ mkdir -p "${RSTUDIO_TMP}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
 mkdir -p "${R_ENV_CACHE}"
 
-
-echo "Getting required containers ... this may take a while ..."
-echo
-# by doing `singularity test` we cache the container image without dumping a local sif file here
 # mksquashfs isn't installed everywhere, so we pull on a head node
 if [[ $HPC_ENV == "m3" ]]; then
     # we use `singularity test` instead of `pull` to avoid leaving a .img file around
@@ -86,14 +82,12 @@ if [[ $HPC_ENV == "m3" ]]; then
     #                               module load singularity/${SINGULARITY_VERSION} && \
     #                               singularity test docker://${IMAGE}"
     module load singularity/${SINGULARITY_VERSION}
-    singularity test "${IMAGE_LOCATION}"
-elif [[ "$IMAGE" =~ ^\. ]]; then
-    # Don't need pull local image
-    singularity test "${IMAGE_LOCATION}"
-else
-    # pull to ensure we have the image cached
-    singularity pull "${IMAGE_LOCATION}"
 fi
+
+echo "Getting required containers ... this may take a while ..."
+CACHE_DIR=${SINGULARITY_CACHEDIR:-$HOME/.singularity/cache/}
+echo "  Storing image in $CACHE_DIR"
+singularity exec "${IMAGE_LOCATION}" true
 
 
 echo
