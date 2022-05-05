@@ -3,7 +3,7 @@ FROM rocker/rstudio:4.1.1
 # This exists as an image at: https://hub.docker.com/r/pansapiens/rocker-seurat
 #
 # Build like:
-#   docker build -t pansapiens/rocker-seurat:latest -t pansapiens/rocker-seurat:4.1.1-4.0.4 -f Dockerfile-seurat .
+#   docker build -t pansapiens/rocker-seurat:latest -t pansapiens/rocker-seurat:4.1.1-4.0.4 -f Dockerfile .
 # where 4.1.1 is the R version, 4.0.4 is the Seurat version
 
 # See layers used at: https://hub.docker.com/r/satijalab/seurat
@@ -27,5 +27,6 @@ RUN R --no-echo --no-restore --no-save -e "install.packages('BiocManager')" && \
     R --no-echo --no-restore --no-save -e "install.packages('hdf5r')" && \
     R --no-echo --no-restore --no-save -e "install.packages('remotes')" && \
     R --no-echo --no-restore --no-save -e "install.packages('renv')" && \
+    R --no-echo --no-restore --no-save -e "install.packages(c('evaluate', 'highr', 'knitr', 'markdown', 'rmarkdown', 'tinytex', 'xfun'))" && \
     R --no-echo --no-restore --no-save -e "remotes::install_version('Seurat', version = '4.0.4')" && \
     R --no-echo --no-restore --no-save -e "remotes::install_github('mojaveazure/seurat-disk')"
