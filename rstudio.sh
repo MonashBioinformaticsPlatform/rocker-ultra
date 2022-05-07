@@ -61,11 +61,15 @@ function get_port {
 # Make a dir name from the IMAGE
 IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
 R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/"
+RSTUDIO_DOT_LOCAL="${R_DIRS}/.local/share/rstudio"
+RSTUDIO_DOT_CONFIG="${R_DIRS}/.config/rstudio"
 RSTUDIO_HOME="${R_DIRS}/session"
 RSTUDIO_TMP="${R_DIRS}/tmp"
 R_LIBS_USER="${R_DIRS}/R"
 R_ENV_CACHE="${R_DIRS}/renv-local"
 mkdir -p "${RSTUDIO_HOME}"
+mkdir -p "${RSTUDIO_DOT_LOCAL}"
+mkdir -p "${RSTUDIO_DOT_CONFIG}"
 mkdir -p "${R_LIBS_USER}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
 mkdir -p "${R_ENV_CACHE}"
@@ -129,8 +133,10 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
-                     --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
-                     --bind "${R_LIBS_USER}:${HOME}/R" \
+                     --bind "${R_ENV_CACHE}:/home/rstudio/.local/share/renv" \
+                     --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
+                     --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
+                     --bind "${R_LIBS_USER}:/home/rstudio/R" \
                      --bind /scratch:/scratch \
                      --bind /projects:/projects \
                      --writable-tmpfs \
@@ -143,8 +149,10 @@ else
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
-                     --bind "${R_ENV_CACHE}:${HOME}/.local/share/renv" \
-                     --bind "${R_LIBS_USER}:${HOME}/R" \
+                     --bind "${R_ENV_CACHE}:/home/rstudio/.local/share/renv" \
+                     --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
+                     --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
+                     --bind "${R_LIBS_USER}:/home/rstudio/R" \
                      "${IMAGE_LOCATION}" \
                      rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
 fi
