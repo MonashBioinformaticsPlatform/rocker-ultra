@@ -15,7 +15,7 @@
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
-IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.1-4.0.4}
+IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.2-4.1.0}
 # You can uncomment this if you've like vanilla rocker/rstudio
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
