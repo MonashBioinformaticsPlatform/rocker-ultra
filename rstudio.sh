@@ -15,7 +15,7 @@
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
-IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.1.2-4.1.0}
+IMAGE=${IMAGE:-pansapiens/rocker-seurat:4.2.0-4.1.0}
 # You can uncomment this if you've like vanilla rocker/rstudio
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
@@ -141,7 +141,7 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind /projects:/projects \
                      --writable-tmpfs \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
+                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
@@ -154,7 +154,7 @@ else
                      --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
                      --bind "${R_LIBS_USER}:/home/rstudio/R" \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=0 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
+                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
 fi
 
 printf 'rserver exited' 1>&2

@@ -1,10 +1,10 @@
-FROM rocker/rstudio:4.1.2
+FROM rocker/rstudio:4.2.0
 
 # This exists as an image at: https://hub.docker.com/r/pansapiens/rocker-seurat
 #
 # Build like:
-#   docker build -t pansapiens/rocker-seurat:latest -t pansapiens/rocker-seurat:4.1.2-4.1.0 -f Dockerfile .
-# where 4.1.2 is the R version, 4.1.0 is the Seurat version
+#   docker build -t pansapiens/rocker-seurat:latest -t pansapiens/rocker-seurat:4.2.0-4.1.0 -f Dockerfile .
+# where 4.2.0 is the R version, 4.1.0 is the Seurat version
 
 # See layers used at: https://hub.docker.com/r/satijalab/seurat
 #                     https://github.com/satijalab/seurat-docker/blob/master/latest/Dockerfile

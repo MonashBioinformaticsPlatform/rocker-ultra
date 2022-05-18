@@ -13,7 +13,7 @@ RUN apt-get update && \
             build-essential git \
             libhdf5-dev libcurl4-openssl-dev libssl-dev libpng-dev libboost-all-dev \
             libxml2-dev openjdk-8-jdk python3-dev python3-pip wget git libfftw3-dev libgsl-dev \
-            libglpk40 libglpk-dev libigraph0-dev libigraph0v5 && \
+            libglpk40 libglpk-dev libigraph0-dev libigraph0v5 libfontconfig1-dev libcairo2-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install numpy && \
