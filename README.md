@@ -59,6 +59,27 @@ that has the Seurat package and require dependencies pre-installed.
 
 ----
 
+## Building a container
+
+_You probably don't need to build these containers yourself_, since pre-built versions already exist on Dockerhub / Github Pacakges. However, you may want to build one to generate a custom version for some purpose.
+
+For example:
+```bash
+REGISTRY="pansapiens"
+VERSION_TAG="4.2.3-4.3.0"
+docker build \
+  -t "${REGISTRY}/rocker-seurat:latest" \
+  -t "${REGISTRY}/rocker-seurat:${VERSION_TAG}" \
+  -f "dockerfiles/rocker-seurat/${VERSION_TAG}/Dockerfile" \
+  "dockerfiles/rocker-seurat/${VERSION_TAG}"
+
+# Generate a Singularity image file
+singularity build "rocker-seurat_${VERSION_TAG}.sif" "${REGISTRY}/rocker-seurat:${VERSION_TAG}"
+
+# Run with your custom Singularity image
+IMAGE="./rocker-seurat_${VERSION_TAG}.sif" ./rstudio.sh
+```
+
 ## Tunnelling to an M3 compute node
 
 _Now some very specific instructions, for users of the M3 / MASSIVE HPC cluster_
