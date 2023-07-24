@@ -74,7 +74,7 @@ docker build \
   "dockerfiles/rocker-seurat/${VERSION_TAG}"
 
 # Generate a Singularity image file
-singularity build "rocker-seurat_${VERSION_TAG}.sif" "${REGISTRY}/rocker-seurat:${VERSION_TAG}"
+singularity build "rocker-seurat_${VERSION_TAG}.sif" "docker-daemon://${REGISTRY}/rocker-seurat:${VERSION_TAG}"
 
 # Run with your custom Singularity image
 IMAGE="./rocker-seurat_${VERSION_TAG}.sif" ./rstudio.sh
