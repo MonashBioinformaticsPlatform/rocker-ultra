@@ -53,9 +53,10 @@ RUN R --no-echo --no-restore --no-save -e "install.packages(c('devtools', 'remot
         'MAST', 'DESeq2', 'BiocGenerics', 'GenomicRanges', 'IRanges', 'rtracklayer', 'monocle', 'Biobase', 'limma', \
         'glmGamPoi', 'DelayedArray', 'DelayedMatrixStats', 'lme4', 'batchelor', 'HDF5Array', 'terra', 'ggrastr' \
     ))" && \
-    R --no-echo --no-restore --no-save -e "install.packages(c('celldex', 'SingleR', 'Matrix.utils'))" && \
+    R --no-echo --no-restore --no-save -e "BiocManager::install(c('celldex', 'SingleR'))" && \
+    R --no-echo --no-restore --no-save -e "install.packages(c('Matrix.utils'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('VGAM', 'R.utils', 'metap', 'Rfast2', 'ape', 'enrichR', 'mixtools'))" && \
-    R --no-echo --no-restore --no-save -e "install.packages('spatstat.explore', 'spatstat.geom')" && \
+    R --no-echo --no-restore --no-save -e "install.packages(c('spatstat.explore', 'spatstat.geom'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('hdf5r'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('evaluate', 'highr', 'knitr', 'markdown', 'rmarkdown', 'tinytex', 'xfun'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('rgeos'))" && \
