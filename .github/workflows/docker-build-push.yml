@@ -3,6 +3,12 @@ name: Create and publish a Docker image
 on:
   push:
     branches: ['main', 'testing/*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+        default: '4.3.3-5.0.3'
 
 env:
   REGISTRY: ghcr.io
@@ -50,9 +56,9 @@ jobs:
         run: |
           echo "datestamp=$(date '+%F.%H%M%S')" >>$GITHUB_ENV
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (on push)
         uses: docker/build-push-action@v3
-        if: ${{ matrix.enabled }}
+        if: ${{ matrix.enabled && github.event_name != "workflow_dispatch" }}
         with:
           push: true
           cache-from: type=gha
@@ -63,3 +69,17 @@ jobs:
             ${{ matrix.image }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           file: ${{ matrix.path }}/${{ matrix.version }}/Dockerfile
+
+      - name: Build and push Docker image (on Run Workflow button)
+        uses: docker/build-push-action@v3
+        if: ${{ github.event_name == "workflow_dispatch" }}
+        with:
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          context: ./dockerfiles/rocker-seurat/${{ github.event.inputs.version }}
+          tags: |
+            ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:${{ github.event.inputs.version }}
+            ${{ matrix.image }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+          file: ./dockerfiles/rocker-seurat/${{ github.event.inputs.version }}/Dockerfile
