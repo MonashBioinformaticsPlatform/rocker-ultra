@@ -26,7 +26,7 @@ RUN apt-get update && \
             libglpk40 libglpk-dev libigraph-dev libigraph2 libfontconfig1-dev libcairo2-dev \
             libudunits2-dev libgdal-dev libgeos-dev libproj-dev libsqlite0-dev \
             gfortran libcurses5-dev \
-            libncurses5-dev libbz2-dev libsuperlu-dev libarpack2-dev libxt-dev tcl8.6-dev tk8.6-dev \
+            libbz2-dev libsuperlu-dev libarpack2-dev libxt-dev tcl8.6-dev tk8.6-dev \
             texinfo texlive-fonts-extra libtiff5-dev libpango1.0-dev freeglut3-dev libxmu-dev \
             libglu1-mesa-dev libcgal-dev libnetcdf-dev libudunits2-0 libmagick++-dev \
             libboost-iostreams-dev libboost-log-dev libboost-system-dev libboost-test-dev \
