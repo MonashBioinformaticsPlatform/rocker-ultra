@@ -7,7 +7,7 @@
 #  - Use an actually writable common Singularity cache somewhere to share images between users
 #    (current setup has permissions issue).
 #  - Determine why laptop -> login-node -> compute-node SSH forwarding isn't working (sshd_config ?)
-#  - Allow srun/sbatch from within the container.
+#  - Allow srun/sbatch from within the container (likely very difficult, very host dependant).
 #
 
 #set -o xtrace
@@ -15,7 +15,7 @@
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
-IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.2.3-4.3.0}
+IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.3.3-5.0.3}
 # You can uncomment this if you've like vanilla rocker/rstudio
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
@@ -128,6 +128,10 @@ LC_PAPER="C"
 LC_MEASUREMENT="C"
 
 if [[ $HPC_ENV == 'm3' ]]; then
+    if [[ -n ${SLURM_JOB_ID} ]]; then
+      # For Strudel
+      echo '{"password":"'${PASSWORD}'", "port": '${PORT}'}' >${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json
+    fi
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
     singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
