@@ -34,7 +34,6 @@ if [[ -z "$PASSWORD" ]]; then
 fi
 export PASSWORD
 
-SINGULARITY_VERSION=3.9.2
 # Use a shared cache location if unspecified
 # export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
 
@@ -78,9 +77,9 @@ mkdir -p "${R_ENV_CACHE}"
 if [[ $HPC_ENV == "m3" ]]; then
     # we use `singularity test` instead of `pull` to avoid leaving a .img file around
     #ssh m3.massive.org.au bash -c "true && \
-    #                               module load singularity/${SINGULARITY_VERSION} && \
+    #                               module load singularity && \
     #                               singularity test docker://${IMAGE}"
-    module load singularity/${SINGULARITY_VERSION}
+    module load singularity
 fi
 
 echo "Getting required containers ... this may take a while ..."
