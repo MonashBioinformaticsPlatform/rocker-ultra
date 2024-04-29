@@ -1,0 +1,52 @@
+{
+    "url": null,
+    "name": "rstudio.sh",
+    "startscript": "#!/bin/bash\nmodule load singularity\ncurl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true\nchmod +x ~/.strudel2/rstudio.sh\n~/.strudel2/rstudio.sh",
+    "instactions": [
+        {
+            "name": "Connect",
+            "paramscmd": "cat ~/.rstudio-rocker/rserver-{jobid}.json",
+            "client": {
+                "cmd": null,
+                "redir": ""
+            },
+            "states": [
+                "RUNNING"
+            ]
+        },
+        {
+            "name": "View log",
+            "paramscmd": "/usr/local/strudel2_cluster/latest/bin/wstool  cat \"~/.strudel2*-{jobid}.out\"",
+            "client": {
+                "cmd": null,
+                "redir": "?token={token}"
+            },
+            "states": [
+                "RUNNING",
+                "Finished"
+            ]
+        },
+        {
+            "name": "View Usage",
+            "paramscmd": "/usr/local/strudel2_cluster/latest/bin/wstool sacct -j {jobid}",
+            "client": {
+                "cmd": null,
+                "redir": "?token={token}"
+            },
+            "states": [
+                "Finished"
+            ]
+        },
+        {
+            "name": "Remove log",
+            "paramscmd": "rm ~/.strudel2-*{jobid}.out ; rm ~/.rstudio-rocker/rserver-{jobid}.json ; echo []",
+            "client": null,
+            "notunnel": true,
+            "states": [
+                "Finished"
+            ]
+        }
+    ],
+    "localbind": true,
+    "applist": null
+}
