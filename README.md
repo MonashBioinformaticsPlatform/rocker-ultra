@@ -59,9 +59,13 @@ that has the Seurat package and require dependencies pre-installed.
 
 ----
 
+## On M3 / Massive
+
+[Specific instructions for the M3 HPC site are here](m3/).
+
 ## Building a container
 
-_You probably don't need to build these containers yourself_, since pre-built versions already exist on Dockerhub / Github Pacakges. However, you may want to build one to generate a custom version for some purpose.
+_You probably don't need to build these containers yourself_, since pre-built versions already exist on Dockerhub / Github Pacakges, and are automatically build via CI. However, you may want to build one to generate a custom version for some purpose.
 
 For example:
 ```bash
@@ -79,48 +83,6 @@ singularity build "rocker-seurat_${VERSION_TAG}.sif" "docker-daemon://${REGISTRY
 # Run with your custom Singularity image
 IMAGE="./rocker-seurat_${VERSION_TAG}.sif" ./rstudio.sh
 ```
-
-## Tunnelling to an M3 compute node
-
-_Now some very specific instructions, for users of the M3 / MASSIVE HPC cluster_
-
-You should run your RStudio session on a compute node, via a SLURM job submission, then SSH tunnel to that compute node.
-
-Just commandline, without using `~/.ssh/config`:
-```bash
-# on login node, in tmux/screen (or adapt to sbatch)
-srun --mem=1G --time=0-12:00 --job-name=my-rstudio ./rstudio.sh
-
-# once running, find out which compute node it's on with squ or similar
-squeue | grep my-rstudio
-
-# we will use m3a002 in this example
-
-# on you local machine
-ssh -i ~/.ssh/m3 -J username@m3.massive.org.au -L 8787:localhost:8787 username@m3a002
-
-# open the URL http://localhost:8787 in the browser on your laptop
-```
-
-OR, using the convenience of `~/.ssh/config`:
-```
-# ~/.ssh/config
-Host m3
- HostName m3.massive.org.au
- User my_m3_username
- IdentityFile ~/.ssh/m3
- ForwardAgent yes
- LocalForward 8787 127.0.0.1:8787
-
-# Other host wildcards may need to be added here over time
-Host m3a* m3b* m3c* m3d* m3e* m3f* m3g* m3h* m3i* m3j*
- User my_m3_username
- IdentityFile ~/.ssh/m3
- ProxyJump m3
- LocalForward 8787 127.0.0.1:8787
-```
-
-Then just `ssh -i ~/.ssh/m3 username@m3a002` to the compute node from your laptop, and open https://localhost:8787 in your browser.
 
 ## History
 
