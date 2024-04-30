@@ -20,7 +20,7 @@ IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
 # Fully qualify the image location if not specified
-if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^\.|^/ ]]; then
+if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^http:|^https:|^\.|^/ ]]; then
   IMAGE_LOCATION=$IMAGE
 else
   IMAGE_LOCATION="docker://$IMAGE"
