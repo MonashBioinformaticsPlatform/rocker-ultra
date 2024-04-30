@@ -75,11 +75,8 @@ mkdir -p "${R_ENV_CACHE}"
 
 # mksquashfs isn't installed everywhere, so we pull on a head node
 if [[ $HPC_ENV == "m3" ]]; then
-    # we use `singularity test` instead of `pull` to avoid leaving a .img file around
-    #ssh m3.massive.org.au bash -c "true && \
-    #                               module load singularity && \
-    #                               singularity test docker://${IMAGE}"
-    module load singularity
+    module load singularity || true
+    SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH:-/fs02,/fs03,/fs04,/scratch,/scratch2,/projects}
 fi
 
 echo "Getting required containers ... this may take a while ..."
@@ -140,8 +137,6 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
                      --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
                      --bind "${R_LIBS_USER}:/home/rstudio/R" \
-                     --bind /scratch:/scratch \
-                     --bind /projects:/projects \
                      --writable-tmpfs \
                      "${IMAGE_LOCATION}" \
                      rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
