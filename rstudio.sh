@@ -115,13 +115,14 @@ echo
 echo "Starting RStudio Server (R version from image ${IMAGE})"
 
 # Set some locales to suppress warnings
-LC_CTYPE="C"
-LC_TIME="C"
-LC_MONETARY="C"
+export LC_CTYPE="C.UTF-8"
+export LC_TIME="C.UTF-8"
+export LC_MONETARY="C.UTF-8"
+export LC_MESSAGES="C.UTF-8"
 # shellcheck disable=SC2034
-LC_PAPER="C"
+export LC_PAPER="C.UTF-8"
 # shellcheck disable=SC2034
-LC_MEASUREMENT="C"
+export LC_MEASUREMENT="C.UTF-8"
 
 if [[ $HPC_ENV == 'm3' ]]; then
     if [[ -n ${SLURM_JOB_ID} ]]; then
