@@ -1,7 +1,7 @@
 {
     "url": null,
     "name": "rstudio.sh",
-    "startscript": "#!/bin/bash\nmodule load singularity\ncurl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true\nchmod +x ~/.strudel2/rstudio.sh\n~/.strudel2/rstudio.sh",
+    "startscript": "#!/bin/bash\nmodule load singularity\ncurl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true\nchmod +x ~/.strudel2/rstudio.sh\nIMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.3.3-5.0.3.sif ~/.strudel2/rstudio.sh",
     "instactions": [
         {
             "name": "Connect",
