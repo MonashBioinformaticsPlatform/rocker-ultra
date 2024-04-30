@@ -126,7 +126,7 @@ LC_MEASUREMENT="C"
 if [[ $HPC_ENV == 'm3' ]]; then
     if [[ -n ${SLURM_JOB_ID} ]]; then
       # For Strudel
-      echo '{"password":"'${PASSWORD}'", "port": '${PORT}'}' >${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json
+      echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json"
     fi
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
     singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
@@ -139,7 +139,7 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind "${R_LIBS_USER}:/home/rstudio/R" \
                      --writable-tmpfs \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
+                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
@@ -152,7 +152,7 @@ else
                      --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
                      --bind "${R_LIBS_USER}:/home/rstudio/R" \
                      "${IMAGE_LOCATION}" \
-                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user=${USER}
+                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
 fi
 
 printf 'rserver exited' 1>&2
