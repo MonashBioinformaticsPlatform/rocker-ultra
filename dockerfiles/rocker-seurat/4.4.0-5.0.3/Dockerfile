@@ -16,6 +16,7 @@ FROM ghcr.io/rocker-org/rstudio:4.4.0
 
 ARG SEURAT_VERS=5.0.3
 ARG QUARTO_VERS=1.4.553
+ENV CRAN="https://cloud.r-project.org"
 
 RUN apt-get update && \
     apt-get install --yes \
@@ -48,6 +49,7 @@ RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_V
 
 RUN R --no-echo --no-restore --no-save -e "install.packages(c('devtools', 'remotes', 'renv', 'R.utils'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('BiocManager'))" && \
+    R --no-echo --no-restore --no-save -e "BiocManager::install(version = '3.19')" && \
     R --no-echo --no-restore --no-save -e "BiocManager::install(c(\
         'multtest', 'S4Vectors', 'SummarizedExperiment', 'SingleCellExperiment', \
         'MAST', 'DESeq2', 'BiocGenerics', 'GenomicRanges', 'IRanges', 'rtracklayer', 'monocle', 'Biobase', 'limma', \
