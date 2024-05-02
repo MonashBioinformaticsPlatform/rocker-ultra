@@ -16,8 +16,8 @@ FROM ghcr.io/rocker-org/rstudio:4.4.0
 
 ARG SEURAT_VERS=5.0.3
 ARG QUARTO_VERS=1.4.553
-ENV R_CRAN_WEB="https://cloud.r-project.org"
-ENV R_CRAN_SRC="https://cloud.r-project.org"
+ENV R_CRAN_WEB="https://mirror.aarnet.edu.au/pub/CRAN/"
+ENV R_CRAN_SRC="https://mirror.aarnet.edu.au/pub/CRAN/"
 
 RUN apt-get update && \
     apt-get install --yes \
