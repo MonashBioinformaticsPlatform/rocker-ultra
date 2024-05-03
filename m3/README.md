@@ -11,7 +11,7 @@ Reload your Studel Web page, you should see a new RStudio in the sidebar as an o
 
 eg, run:
 ```bash
-mkdir ~/.strudel2/apps.d
+mkdir -p ~/.strudel2/apps.d
 curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/apps.rstudio.yaml >~/.strudel2/apps.d/apps.rstudio.yaml
 ```
 
