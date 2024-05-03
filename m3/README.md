@@ -5,11 +5,17 @@ Here are some very specific instructions, for users of the M3 / MASSIVE HPC clus
 
 ## Using rstudio.sh via Strudel Web (beta)
 
-On M3 / Massive, when using Strudel (beta), merge the example `apps.rstudio.json` into your `~/.strudel2/apps.json`.
+On M3 / Massive, when using Strudel (beta), copy `apps.rstudio.yaml` into your `~/.strudel2/apps.d/` directory.
 
-Reload your Studel Web page, you should see `rstudio.sh` in the sidebar as an option.
+Reload your Studel Web page, you should see a new RStudio in the sidebar as an option.
 
-_The example apps.rstudio.json uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method unreliable on the cluster. This might have been a temporary issue._
+eg, run:
+```bash
+mkdir ~/.strudel2/apps.d
+curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/apps.rstudio.yaml >~/.strudel2/apps.d/apps.rstudio.yaml
+```
+
+_The example apps.rstudio.yaml uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method unreliable on the cluster. This might have been a temporary issue._
 
 ## Tunnelling to an M3 compute node
 
