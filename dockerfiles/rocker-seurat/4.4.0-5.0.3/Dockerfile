@@ -16,8 +16,14 @@ FROM ghcr.io/rocker-org/rstudio:4.4.0
 
 ARG SEURAT_VERS=5.0.3
 ARG QUARTO_VERS=1.4.553
-ENV R_CRAN_WEB="https://mirror.aarnet.edu.au/pub/CRAN/"
-ENV R_CRAN_SRC="https://mirror.aarnet.edu.au/pub/CRAN/"
+
+# https://rocker-project.org/images/versioned/r-ver#switch-the-default-cran-mirror
+#ARG CRAN="https://cloud.r-project.org"
+ARG CRAN="https://mirror.aarnet.edu.au/pub/CRAN/"
+ARG BIOC_MIRROR="https://bioconductor.org"
+
+RUN echo "options(repos = c(CRAN = '${CRAN}'))" >>"${R_HOME}/etc/Rprofile.site"
+RUN echo "options(BioC_mirror = '${BIOC_MIRROR}')" >>"${R_HOME}/etc/Rprofile.site"
 
 RUN apt-get update && \
     apt-get install --yes \
