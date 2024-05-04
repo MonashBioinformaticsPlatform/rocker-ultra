@@ -37,9 +37,13 @@ export PASSWORD
 # Use a shared cache location if unspecified
 # export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
 
+if [[ -z "${HOSTNAME}" ]]; then
+    _hostname=$(hostname)
+    export HOSTNAME="${_hostname}"
+fi
 # We detect if we are on M3/MASSIVE by the hostname.
 # Hardcode this to `local` if you don't ever use M3/MASSIVE.
-if [[ $HOSTNAME == m3* ]]; then
+if [[ ${HOSTNAME} == m3* ]]; then
     HPC_ENV="m3"
 else
     HPC_ENV="local"
@@ -76,12 +80,12 @@ mkdir -p "${R_ENV_CACHE}"
 # mksquashfs isn't installed everywhere, so we pull on a head node
 if [[ $HPC_ENV == "m3" ]]; then
     module load singularity || true
-    SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH:-/fs02,/fs03,/fs04,/scratch,/scratch2,/projects}
+    export SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH:-/fs02,/fs03,/fs04,/scratch,/scratch2,/projects}
 fi
 
 echo "Getting required containers ... this may take a while ..."
-CACHE_DIR=${SINGULARITY_CACHEDIR:-$HOME/.singularity/cache/}
-echo "  Storing image in $CACHE_DIR"
+_cachedir=${SINGULARITY_CACHEDIR:-$HOME/.singularity/cache/}
+echo "  Storing image in ${_cachedir}"
 singularity exec "${IMAGE_LOCATION}" true
 
 
