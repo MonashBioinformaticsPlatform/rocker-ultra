@@ -9,7 +9,7 @@ startscript: |
 
   chmod +x ~/.strudel2/rstudio.sh
 
-  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.4-5.0.3.sif ~/.strudel2/rstudio.sh
+  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.0-5.0.3.sif ~/.strudel2/rstudio.sh
 instactions:
   - name: Connect
     paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
