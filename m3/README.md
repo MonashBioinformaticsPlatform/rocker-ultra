@@ -12,7 +12,7 @@ Reload your Studel Web page, you should see a new RStudio in the sidebar as an o
 eg, run:
 ```bash
 mkdir -p ~/.strudel2/apps.d
-curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/apps.rstudio.yaml >~/.strudel2/apps.d/apps.rstudio.yaml
+curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/rocker-seurat_4.4.0-5.0.3.strudel.yaml >~/.strudel2/apps.d/rocker-seurat_4.4.0-5.0.3.strudel.yaml
 ```
 
 _The example apps.rstudio.yaml uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method unreliable on the cluster. This might have been a temporary issue._
