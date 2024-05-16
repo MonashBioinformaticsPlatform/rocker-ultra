@@ -54,8 +54,9 @@ IMAGE=rocker/rstudio:3.5.3 ./rstudio.sh
 ```
 As long as there is a corresponding versioned container provided by Rocker, most common R versions should work.
 
-Note that by default the script uses a custom image based on `rocker/rstudio` (`pansapiens/rocker-seurat:4.1.1-4.0.4`) 
-that has the Seurat package and require dependencies pre-installed.
+Note that by default the script uses a custom image based on `rocker/rstudio` 
+that has the Seurat package and required dependencies pre-installed. 
+You can find available versions under 'Packages' in the sidebar on Github (eg, the [rocker-seurat](https://github.com/MonashBioinformaticsPlatform/rocker-ultra/pkgs/container/rocker-ultra%2Frocker-seurat/versions?filters%5Bversion_type%5D=tagged) releases).
 
 ----
 
