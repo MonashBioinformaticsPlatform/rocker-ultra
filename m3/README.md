@@ -14,7 +14,7 @@ curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra
 ```
 Reload your Studel Web page, you should see a new RStudio in the sidebar as an option.
 
-_The example apps.rstudio.yaml uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method unreliable on the cluster. This might have been a temporary issue._
+_The example `rocker-seurat_*.strudel.yaml` uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method slow and unreliable on the cluster. This might have been a temporary issue._
 
 ## Tunnelling to an M3 compute node
 
