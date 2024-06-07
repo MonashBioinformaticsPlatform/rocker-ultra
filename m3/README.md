@@ -31,7 +31,7 @@ squeue | grep my-rstudio
 # we will use m3a002 in this example
 
 # on you local machine
-ssh -i ~/.ssh/m3 -J username@m3.massive.org.au -L 8787:localhost:8787 username@m3a002
+ssh -i ~/.ssh/id_rsa -J username@m3.massive.org.au -L 8787:localhost:8787 username@m3a002
 
 # open the URL http://localhost:8787 in the browser on your laptop
 ```
