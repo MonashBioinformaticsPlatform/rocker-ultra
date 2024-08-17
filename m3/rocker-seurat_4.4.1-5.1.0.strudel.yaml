@@ -1,0 +1,45 @@
+url: null
+name: RStudio_R_4.4.1_Seurat_5.1.0
+startscript: |
+  #!/bin/bash
+
+  module load singularity
+
+  curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true
+
+  chmod +x ~/.strudel2/rstudio.sh
+
+  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.1-5.1.0.sif ~/.strudel2/rstudio.sh
+instactions:
+  - name: Connect
+    paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
+    client:
+      cmd: null
+      redir: ""
+    states:
+      - RUNNING
+  - name: View log
+    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool  cat
+      "~/.strudel2*-{jobid}.out"
+    client:
+      cmd: null
+      redir: ?token={token}
+    states:
+      - RUNNING
+      - Finished
+  - name: View Usage
+    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool sacct -j {jobid}
+    client:
+      cmd: null
+      redir: ?token={token}
+    states:
+      - Finished
+  - name: Remove log
+    paramscmd: rm ~/.strudel2-*{jobid}.out ; rm
+      ~/.rstudio-rocker/rserver-{jobid}.json ; echo []
+    client: null
+    notunnel: true
+    states:
+      - Finished
+localbind: true
+applist: null
