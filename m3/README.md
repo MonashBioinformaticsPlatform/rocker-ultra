@@ -5,12 +5,12 @@ Here are some very specific instructions, for users of the M3 / MASSIVE HPC clus
 
 ## Using rstudio.sh via Strudel Web (beta)
 
-On M3 / Massive, when using [Strudel (beta)](https://beta.desktop.cvl.org.au/), copy `rocker-seurat_4.4.0-5.0.3.strudel.yaml` into your `~/.strudel2/apps.d/` directory.
+On M3 / Massive, when using [Strudel (beta)](https://beta.desktop.cvl.org.au/), copy `rocker-seurat_4.4.1-5.1.0.strudel.yaml` into your `~/.strudel2/apps.d/` directory.
 
 One easy way to do this is run:
 ```bash
 mkdir -p ~/.strudel2/apps.d
-curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/rocker-seurat_4.4.0-5.0.3.strudel.yaml >~/.strudel2/apps.d/rocker-seurat_4.4.0-5.0.3.strudel.yaml
+curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/rocker-seurat_4.4.1-5.1.0.strudel.yaml >~/.strudel2/apps.d/rocker-seurat_4.4.1-5.1.0.strudel.yaml
 ```
 Reload your Studel Web page, you should see a new RStudio in the sidebar as an option.
 
