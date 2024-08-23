@@ -10,6 +10,7 @@ startscript: |
   chmod +x ~/.strudel2/rstudio.sh
 
   IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.3.3-5.0.3.sif ~/.strudel2/rstudio.sh
+submitcmd: PYTHONPATH={{ s2path }}/forms /usr/bin/python3 {{ s2path }}/strudel2_cluster/submitform/submit_class.py desktop
 instactions:
   - name: Connect
     paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
