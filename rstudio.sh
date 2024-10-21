@@ -12,6 +12,11 @@
 
 #set -o xtrace
 
+# Deactivate any active conda environment
+if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+    conda deactivate
+fi
+
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
