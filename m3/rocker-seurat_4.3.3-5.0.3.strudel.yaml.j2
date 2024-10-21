@@ -3,8 +3,6 @@ name: RStudio_R_4.3.3_Seurat_5.0.3
 startscript: |
   #!/bin/bash
 
-  module load singularity
-
   curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true
 
   chmod +x ~/.strudel2/rstudio.sh

@@ -77,17 +77,31 @@ mkdir -p "${R_LIBS_USER}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
 mkdir -p "${R_ENV_CACHE}"
 
-# mksquashfs isn't installed everywhere, so we pull on a head node
+# Set SINGULARITY_BIN to apptainer if it's on path, otherwise singularity
+if command -v apptainer >/dev/null 2>&1; then
+    SINGULARITY_BIN="apptainer"
+else
+    SINGULARITY_BIN="singularity"
+fi
+export SINGULARITY_BIN
+
+if [[ -n "${APPTAINER_CACHEDIR}" ]]; then
+    _cachedir="${APPTAINER_CACHEDIR}"
+elif [[ -n "${SINGULARITY_CACHEDIR}" ]]; then
+    _cachedir="${SINGULARITY_CACHEDIR}"
+else
+    _cachedir=${HOME}/.apptainer/cache/
+fi
+
 if [[ $HPC_ENV == "m3" ]]; then
-    module load singularity || true
     export SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH:-/fs02,/fs03,/fs04,/scratch,/scratch2,/projects}
+    export APPTAINER_BINDPATH=${SINGULARITY_BINDPATH}
 fi
 
 echo "Getting required containers ... this may take a while ..."
-_cachedir=${SINGULARITY_CACHEDIR:-$HOME/.singularity/cache/}
 echo "  Storing image in ${_cachedir}"
-singularity exec "${IMAGE_LOCATION}" true
-
+# Test the image works, execute a no-op command
+${SINGULARITY_BIN} exec "${IMAGE_LOCATION}" true
 
 echo
 echo "Finding an available port ..."
@@ -133,8 +147,9 @@ if [[ $HPC_ENV == 'm3' ]]; then
       # For Strudel
       echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json"
     fi
+    APPTAINERENV_PASSWORD="${PASSWORD}" \
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
@@ -147,8 +162,9 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
 else
+    APPTAINERENV_PASSWORD="${PASSWORD}" \
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    singularity exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
