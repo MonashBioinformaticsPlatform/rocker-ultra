@@ -5,16 +5,16 @@ Here are some very specific instructions, for users of the M3 / MASSIVE HPC clus
 
 ## Using rstudio.sh via Strudel Web (beta)
 
-On M3 / Massive, when using [Strudel (beta)](https://beta.desktop.cvl.org.au/), copy `rocker-seurat_4.4.1-5.1.0.strudel.yaml` into your `~/.strudel2/apps.d/` directory.
+On M3 / Massive, when using [Strudel (beta)](https://beta.desktop.cvl.org.au/), copy `rocker-seurat_4.4.1-5.1.0.strudel.yaml.j2` into your `~/.strudel2/apps.d/` directory.
 
 One easy way to do this is run:
 ```bash
 mkdir -p ~/.strudel2/apps.d
-curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/rocker-seurat_4.4.1-5.1.0.strudel.yaml >~/.strudel2/apps.d/rocker-seurat_4.4.1-5.1.0.strudel.yaml
+curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/m3/rocker-seurat_4.4.1-5.1.0.strudel.yaml.j2 >~/.strudel2/apps.d/rocker-seurat_4.4.1-5.1.0.strudel.yaml.j2
 ```
 Reload your Studel Web page, you should see a new RStudio in the sidebar as an option.
 
-_The example `rocker-seurat_*.strudel.yaml` uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method slow and unreliable on the cluster. This might have been a temporary issue._
+_The example `rocker-seurat_*.strudel.yaml.j2` uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method slow and unreliable on the cluster. This might have been a temporary issue._
 
 ## Tunnelling to an M3 compute node
 
