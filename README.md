@@ -50,13 +50,11 @@ Starting RStudio Server (R version 3.6.0)
 
 If you'd like to select your R version, set the `IMAGE` environment variable like this:
 ```
-IMAGE=rocker/rstudio:3.5.3 ./rstudio.sh
+IMAGE=ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.4.0-5.0.3 ./rstudio.sh
 ```
-As long as there is a corresponding versioned container provided by Rocker, most common R versions should work.
+See [available rocker-ultra containers here](https://github.com/MonashBioinformaticsPlatform/rocker-ultra/pkgs/container/rocker-ultra%2Frocker-seurat/versions?filters%5Bversion_type%5D=tagged). `4.4.0-5.0.3` means R v4.4.0, Seurat v5.0.3 (the Seurat package, among others, are pre-installed in these containers). These containers include most system dependencies required to install any CRAN or Bioconductor package - if you find an R package that won't install due to a missing system dependency (`apt-get`, `-dev` header packages) please create an [issue](https://github.com/MonashBioinformaticsPlatform/rocker-ultra/issues). 
 
-Note that by default the script uses a custom image based on `rocker/rstudio` 
-that has the Seurat package and required dependencies pre-installed. 
-You can find available versions under 'Packages' in the sidebar on Github (eg, the [rocker-seurat](https://github.com/MonashBioinformaticsPlatform/rocker-ultra/pkgs/container/rocker-ultra%2Frocker-seurat/versions?filters%5Bversion_type%5D=tagged) releases).
+You can also use 'vanilla' containers provided by the Rocker project (eg `rocker/rstudio:3.5.3`), but be aware that system dependencies required to install packages may be missing.
 
 ----
 
