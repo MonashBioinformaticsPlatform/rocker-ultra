@@ -11,6 +11,7 @@ per-session password generation and SSH port forwarding instructions for free. I
 By default `rocker-ultra` uses a custom image based on `rocker/rstudio` but with [Seurat](https://satijalab.org/seurat/) 
 dependencies pre-installed.
 
+
 ## Quickstart
 
 Run:
@@ -56,15 +57,22 @@ See [available rocker-ultra containers here](https://github.com/MonashBioinforma
 
 You can also use 'vanilla' containers provided by the Rocker project (eg `rocker/rstudio:3.5.3`), but be aware that system dependencies required to install packages may be missing.
 
-----
+
+## Using renv
+
+You can use [`renv`](https://rstudio.github.io/renv/index.html) inside the container (and ignore any of the pre-installed R packages). This is generally a good idea for 'real projects', since you'll get an `renv.lock` file that allows the same dependencies to be easily reinstalled if you move the project folder to another computer.
+
+Note that the `renv` folder itself (typically) won't be compatible between different container versions. If you switch containers mid-project, you should move or delete the `renv` folder and do an `renv::restore()` (which reinstalls the dependencies listed in the `renv.lock` file). This will ensure your installed packages are compabile with the new container.
+
 
 ## On M3 / Massive
 
 [Specific instructions for the M3 HPC site are here](m3/).
 
+
 ## Building a container
 
-_You probably don't need to build these containers yourself_, since pre-built versions already exist on Dockerhub / Github Pacakges, and are automatically build via CI. However, you may want to build one to generate a custom version for some purpose.
+_You probably don't need to build these containers yourself_, since pre-built versions already exist on Dockerhub / Github Pacakges, and are automatically built via CI. However, you may want to build one to generate a custom version for some purpose.
 
 For example:
 ```bash
