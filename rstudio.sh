@@ -17,6 +17,11 @@ if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
     conda deactivate
 fi
 
+# This may be required at some sites if the Apptainer configuration
+# prevents SLURM from setting the appropriate memory cgroups ? See:
+# https://github.com/MonashBioinformaticsPlatform/rocker-ultra/issues/7
+# export APPTAINER_DISABLE_CGROUPS=1
+
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
