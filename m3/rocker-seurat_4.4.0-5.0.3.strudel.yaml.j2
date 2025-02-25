@@ -8,7 +8,7 @@ startscript: |
   chmod +x ~/.strudel2/rstudio.sh
 
   IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.0-5.0.3.sif ~/.strudel2/rstudio.sh
-submitcmd: conda deactivate || true && conda deactivate || true && PYTHONPATH={{ s2path }}/forms /usr/bin/python3 {{ s2path }}/strudel2_cluster/submitform/submit_class.py desktop
+submitcmd: {{ s2path }}/venv/bin/python3 {{ s2path }}/strudel2_cluster/strudel2_cluster/submitform/submit_class.py m3.desktop
 instactions:
   - name: Connect
     paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
