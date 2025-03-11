@@ -44,9 +44,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install UMAP
-RUN LLVM_CONFIG=/usr/lib/llvm-14/bin/llvm-config pip3 install llvmlite && \
-    pip3 install numpy && \
-    pip3 install umap-learn
+RUN LLVM_CONFIG=/usr/lib/llvm-14/bin/llvm-config \
+    pip3 install --break-system-packages --no-cache-dir llvmlite && \
+    pip3 install --break-system-packages --no-cache-dir numpy && \
+    pip3 install --break-system-packages --no-cache-dirumap-learn
 
 RUN git clone --branch v1.2.1 https://github.com/KlugerLab/FIt-SNE.git && \
     cd FIt-SNE && g++ -std=c++11 -O3  src/sptree.cpp src/tsne.cpp src/nbodyfft.cpp  -o /usr/bin/fast_tsne -pthread -lfftw3 -lm -Wno-address-of-packed-member
