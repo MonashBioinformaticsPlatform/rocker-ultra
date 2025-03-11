@@ -26,7 +26,7 @@ jobs:
         include:
           - path: ./dockerfiles/rocker-seurat
             image: ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat
-            version: 4.4.1-5.1.0
+            version: 4.4.3-5.2.1
             enabled: false
 
     steps:
