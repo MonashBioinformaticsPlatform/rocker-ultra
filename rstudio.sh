@@ -51,13 +51,16 @@ if [[ -z "${HOSTNAME}" ]]; then
     _hostname=$(hostname)
     export HOSTNAME="${_hostname}"
 fi
-# We detect if we are on M3/MASSIVE by the hostname.
-# Hardcode this to `local` if you don't ever use M3/MASSIVE.
-if [[ ${HOSTNAME} == m3* ]]; then
-    HPC_ENV="m3"
-else
+
+# Orginally developed for M3, what we are acually interested in if if we are in a strudel2 environment
+# Since we can't easily tell if we are in strudel2 we will actually check if we are in slurm (PBS should be the same)
+# Hardcode this to 'local' if you don't ever use an HPC cluster.
+if [[ -z "${SLURM_JOB_ID}" ]]; then
     HPC_ENV="local"
+else
+    HPC_ENV="m3"
 fi
+    
 
 function get_port {
     # lsof doesn't return open ports for system services, so we use netstat
