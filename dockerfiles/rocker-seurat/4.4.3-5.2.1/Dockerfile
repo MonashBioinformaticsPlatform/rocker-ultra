@@ -30,10 +30,10 @@ RUN apt-get update && \
     apt-get install --yes \
     build-essential git pkg-config wget curl htop pandoc \
     libhdf5-dev libcurl4-openssl-dev libssl-dev libpng-dev libboost-all-dev \
-    libxml2 libxml2-dev openjdk-8-jdk python3-dev python3-pip libfftw3-dev libgsl-dev \
+    libxml2 libxml2-dev openjdk-21-jdk python3-dev python3-pip libfftw3-dev libgsl-dev \
     llvm \
-    libglpk40 libglpk-dev libigraph-dev libigraph2 libfontconfig1-dev libcairo2-dev \
-    libudunits2-dev libgdal-dev libgeos-dev libproj-dev libsqlite0-dev \
+    libglpk40 libglpk-dev libigraph-dev libigraph23 libfontconfig1-dev libcairo2-dev \
+    libudunits2-dev libgdal-dev libgeos-dev libproj-dev libsqlite3-dev \
     gfortran \
     libbz2-dev libsuperlu-dev libarpack2-dev libxt-dev tcl8.6-dev tk8.6-dev \
     texinfo texlive-fonts-extra libtiff5-dev libpango1.0-dev freeglut3-dev libxmu-dev \
