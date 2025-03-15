@@ -47,7 +47,7 @@ RUN apt-get update && \
 RUN LLVM_CONFIG=/usr/lib/llvm-14/bin/llvm-config \
     pip3 install --break-system-packages --no-cache-dir llvmlite && \
     pip3 install --break-system-packages --no-cache-dir numpy && \
-    pip3 install --break-system-packages --no-cache-dirumap-learn
+    pip3 install --break-system-packages --no-cache-dir umap-learn
 
 RUN git clone --branch v1.2.1 https://github.com/KlugerLab/FIt-SNE.git && \
     cd FIt-SNE && g++ -std=c++11 -O3  src/sptree.cpp src/tsne.cpp src/nbodyfft.cpp  -o /usr/bin/fast_tsne -pthread -lfftw3 -lm -Wno-address-of-packed-member
