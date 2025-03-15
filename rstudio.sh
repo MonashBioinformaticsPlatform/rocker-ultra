@@ -107,7 +107,18 @@ else
 fi
 
 if [[ $HPC_ENV == "m3" ]]; then
-    export SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH:-/fs02,/fs03,/fs04,/scratch,/scratch2,/projects}
+    BINDPATHS=("/fs02" "/fs03" "/fs04" "/scratch" "/scratch2" "/projects")
+    SINGULARITY_BINDPATH=""
+    for path in "${BINDPATHS[@]}"; do
+        if [[ -d "$path" ]]; then
+            if [[ -z "$SINGULARITY_BINDPATH" ]]; then
+                SINGULARITY_BINDPATH="$path"
+            else
+                SINGULARITY_BINDPATH="$SINGULARITY_BINDPATH,$path"
+            fi
+        fi
+    done
+    export SINGULARITY_BINDPATH
     export APPTAINER_BINDPATH=${SINGULARITY_BINDPATH}
 fi
 
