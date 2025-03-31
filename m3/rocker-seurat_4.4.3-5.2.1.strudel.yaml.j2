@@ -1,0 +1,44 @@
+url: null
+name: RStudio_R_4.4.3_Seurat_5.2.1
+startscript: |
+  #!/bin/bash
+
+  curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra/main/rstudio.sh >~/.strudel2/rstudio.sh || true
+
+  chmod +x ~/.strudel2/rstudio.sh
+
+  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.3-5.2.1.sif ~/.strudel2/rstudio.sh
+submitcmd: conda deactivate || true && conda deactivate || true && {{ s2path }}/venv/bin/python3 {{ s2path }}/strudel2_cluster/strudel2_cluster/submitform/submit_class.py m3.desktop
+instactions:
+  - name: Connect
+    paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
+    client:
+      cmd: null
+      redir: ""
+    states:
+      - RUNNING
+  - name: View log
+    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool  cat
+      "~/.strudel2*-{jobid}.out"
+    client:
+      cmd: null
+      redir: ?token={token}
+    states:
+      - RUNNING
+      - Finished
+  - name: View Usage
+    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool sacct -j {jobid}
+    client:
+      cmd: null
+      redir: ?token={token}
+    states:
+      - Finished
+  - name: Remove log
+    paramscmd: rm ~/.strudel2-*{jobid}.out ; rm
+      ~/.rstudio-rocker/rserver-{jobid}.json ; echo []
+    client: null
+    notunnel: true
+    states:
+      - Finished
+localbind: true
+applist: null
