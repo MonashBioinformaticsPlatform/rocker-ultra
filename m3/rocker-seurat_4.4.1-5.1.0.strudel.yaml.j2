@@ -18,19 +18,18 @@ instactions:
     states:
       - RUNNING
   - name: View log
-    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool  cat
-      "~/.strudel2*-{jobid}.out"
+    paramscmd: {{ s2path }}/apps/xterm_app/run.sh "/bin/bash /bin/bash {{ s2path }}/bin/viewlog.sh ~/.strudel2/logs/.strudel2*-{jobid}.out"
     client:
       cmd: null
-      redir: ?token={token}
+      redir: "{tunnelid}/static/index.html"
     states:
       - RUNNING
       - Finished
   - name: View Usage
-    paramscmd: /usr/local/strudel2_cluster/latest/bin/wstool sacct -j {jobid}
+    paramscmd: {{ s2path }}/apps/xterm_app/run.sh "/bin/bash /bin/bash -c sacct -j {jobid}"
     client:
       cmd: null
-      redir: ?token={token}
+      redir: "{tunnelid}/static/index.html"
     states:
       - Finished
   - name: Remove log
