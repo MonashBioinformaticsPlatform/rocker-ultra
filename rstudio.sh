@@ -12,10 +12,6 @@
 
 #set -o xtrace
 
-# Deactivate any active conda environment
-if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
-    conda deactivate
-fi
 
 # This may be required at some sites if the Apptainer configuration
 # prevents SLURM from setting the appropriate memory cgroups ? See:
@@ -45,7 +41,7 @@ fi
 export PASSWORD
 
 # Use a shared cache location if unspecified
-# export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
+# export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-/scratch/df22/andrewpe/singularity_cache}
 
 if [[ -z "${HOSTNAME}" ]]; then
     _hostname=$(hostname)
@@ -75,7 +71,7 @@ function get_port {
 }
 
 # Make a dir name from the IMAGE
-IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
+IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__\//g')
 R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/"
 RSTUDIO_DOT_LOCAL="${R_DIRS}/.local/share/rstudio"
 RSTUDIO_DOT_CONFIG="${R_DIRS}/.config/rstudio"
@@ -166,14 +162,20 @@ export LC_PAPER="C.UTF-8"
 # shellcheck disable=SC2034
 export LC_MEASUREMENT="C.UTF-8"
 
+# Set RENV cache path to be inside the container and versioned.
+# The destination of the bind mount for the renv cache is /home/rstudio/.local/share/renv
+export RENV_PATHS_CACHE="/home/rstudio/.local/share/renv"
+
 if [[ $HPC_ENV == 'm3' ]]; then
     if [[ -n ${SLURM_JOB_ID} ]]; then
       # For Strudel
       echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json"
     fi
-    APPTAINERENV_PASSWORD="${PASSWORD}" \
-    SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+    ${SINGULARITY_BIN} exec --cleanenv \
+                     --env "PASSWORD=${PASSWORD}" --env "USER=${USER}" --env "HOME=${HOME}" --env "LC_CTYPE=${LC_CTYPE}" --env "LC_TIME=${LC_TIME}" --env "LC_MONETARY=${LC_MONETARY}" --env "LC_MESSAGES=${LC_MESSAGES}" --env "LC_PAPER=${LC_PAPER}" --env "LC_MEASUREMENT=${LC_MEASUREMENT}" --env "HOSTNAME=${HOSTNAME}" --env "APPTAINER_BINDPATH=${APPTAINER_BINDPATH}" --env "SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH}" --env "RENV_PATHS_CACHE=${RENV_PATHS_CACHE}" \
+                     --bind "/etc/passwd:/etc/passwd:ro" \
+                     --bind "/etc/group:/etc/group:ro" \
+                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
@@ -184,11 +186,13 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --writable-tmpfs \
                      "${IMAGE_LOCATION}" \
                      rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
-                     #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
+                     #--bind ${RSITELIB}:/usr/local/lib/R/site-library 
 else
-    APPTAINERENV_PASSWORD="${PASSWORD}" \
-    SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
+    ${SINGULARITY_BIN} exec --cleanenv \
+                     --env "PASSWORD=${PASSWORD}" --env "USER=${USER}" --env "HOME=${HOME}" --env "LC_CTYPE=${LC_CTYPE}" --env "LC_TIME=${LC_TIME}" --env "LC_MONETARY=${LC_MONETARY}" --env "LC_MESSAGES=${LC_MESSAGES}" --env "LC_PAPER=${LC_PAPER}" --env "LC_MEASUREMENT=${LC_MEASUREMENT}" --env "HOSTNAME=${HOSTNAME}" --env "APPTAINER_BINDPATH=${APPTAINER_BINDPATH}" --env "SINGULARITY_BINDPATH=${SINGULARITY_BINDPATH}" --env "RENV_PATHS_CACHE=${RENV_PATHS_CACHE}" \
+                     --bind "/etc/passwd:/etc/passwd:ro" \
+                     --bind "/etc/group:/etc/group:ro" \
+                     --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
                      --bind "${RSTUDIO_TMP}:/tmp" \
                      --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
                      --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
