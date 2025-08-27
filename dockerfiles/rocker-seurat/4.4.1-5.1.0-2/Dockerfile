@@ -39,6 +39,7 @@ RUN apt-get update && \
     libglu1-mesa-dev libcgal-dev libnetcdf-dev libudunits2-0 libmagick++-dev \
     libboost-iostreams-dev libboost-log-dev libboost-system-dev libboost-test-dev \
     libpcre2-dev libgit2-dev libharfbuzz-dev libfribidi-dev libjpeg62 liborc-0.4-0 && \
+    cmake && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
