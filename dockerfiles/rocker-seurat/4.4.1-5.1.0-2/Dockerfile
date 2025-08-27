@@ -58,7 +58,7 @@ RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_V
 RUN R --no-echo --no-restore --no-save -e "install.packages(c('devtools', 'remotes', 'renv', 'R.utils'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('tidyverse'))" && \
     R --no-echo --no-restore --no-save -e "install.packages(c('BiocManager'))" && \
-    R --no-echo --no-restore --no-save -e "BiocManager::install(version = '3.19')" && \
+    R --no-echo --no-restore --no-save -e "BiocManager::install(version = '3.19', ask=FALSE)" && \
     R --no-echo --no-restore --no-save -e "BiocManager::install(c(\
     'multtest', 'S4Vectors', 'SummarizedExperiment', 'SingleCellExperiment', \
     'MAST', 'DESeq2', 'BiocGenerics', 'GenomicRanges', 'IRanges', 'rtracklayer', 'monocle', 'Biobase', 'limma', \
