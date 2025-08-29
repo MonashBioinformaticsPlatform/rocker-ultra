@@ -25,7 +25,7 @@ fi
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
 # This version tag is actually {R_version}-{Seurat_version}
-IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.4.1-5.1.0}
+IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.4.1-5.1.0-2}
 # You can uncomment this if you've like vanilla rocker/rstudio
 #IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
 
