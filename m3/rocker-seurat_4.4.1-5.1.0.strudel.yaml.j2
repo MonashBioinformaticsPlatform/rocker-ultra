@@ -7,7 +7,7 @@ startscript: |
 
   chmod +x ~/.strudel2/rstudio.sh
 
-  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.1-5.1.0.sif ~/.strudel2/rstudio.sh
+  IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.1-5.1.0-2.sif ~/.strudel2/rstudio.sh
 submitcmd: conda deactivate || true && conda deactivate || true && {{ s2path }}/venv/bin/python3 {{ s2path }}/strudel2_cluster/strudel2_cluster/submitform/submit_class.py m3.desktop
 instactions:
   - name: Connect
