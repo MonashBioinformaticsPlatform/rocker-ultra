@@ -14,7 +14,7 @@
 
 # Deactivate any active conda environment
 if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
-    conda deactivate
+    conda deactivate; conda deactivate
 fi
 
 # This may be required at some sites if the Apptainer configuration
