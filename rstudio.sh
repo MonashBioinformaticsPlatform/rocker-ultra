@@ -181,7 +181,6 @@ if [[ $HPC_ENV == 'm3' ]]; then
                      --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
                      --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
                      --bind "${R_LIBS_USER}:/home/rstudio/R" \
-                     --writable-tmpfs \
                      "${IMAGE_LOCATION}" \
                      rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
                      #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
