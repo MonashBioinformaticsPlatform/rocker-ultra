@@ -3,19 +3,10 @@
 # Loosely based on https://www.rocker-project.org/use/singularity/
 #
 # TODO:
-#  - Set the LC_* environment variables to suppress warnings in Rstudio console
-#  - Use an actually writable common Singularity cache somewhere to share images between users
-#    (current setup has permissions issue).
-#  - Determine why laptop -> login-node -> compute-node SSH forwarding isn't working (sshd_config ?)
 #  - Allow srun/sbatch from within the container (likely very difficult, very host dependant).
 #
 
 #set -o xtrace
-
-# Deactivate any active conda environment
-if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
-    conda deactivate; conda deactivate
-fi
 
 # This may be required at some sites if the Apptainer configuration
 # prevents SLURM from setting the appropriate memory cgroups ? See:
@@ -24,10 +15,10 @@ fi
 
 # We use this modified version of rocker/rstudio by default, with Seurat and required
 # dependencies already installed.
-# This version tag is actually {R_version}-{Seurat_version}
+# This version tag is actually {r_version}-{seurat_version}-{build_number}
 IMAGE=${IMAGE:-ghcr.io/monashbioinformaticsplatform/rocker-ultra/rocker-seurat:4.4.1-5.1.0-2}
 # You can uncomment this if you've like vanilla rocker/rstudio
-#IMAGE=${IMAGE:-rocker/rstudio:4.1.1}
+#IMAGE=${IMAGE:-rocker/rstudio:4.4.1}
 
 # Fully qualify the image location if not specified
 if [[ "$IMAGE" =~ ^docker-daemon:|^docker://|^http:|^https:|^\.|^/ ]]; then
@@ -45,29 +36,48 @@ fi
 export PASSWORD
 
 # Use a shared cache location if unspecified
-# export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-"/scratch/df22/andrewpe/singularity_cache"}
+# export SINGULARITY_CACHEDIR=${SINGULARITY_CACHEDIR:-/scratch/df22/andrewpe/singularity_cache}
+# export APPTAINER_CACHEDIR=${SINGULARITY_CACHEDIR}
 
 if [[ -z "${HOSTNAME}" ]]; then
     _hostname=$(hostname)
     export HOSTNAME="${_hostname}"
 fi
 
-# Orginally developed for M3, what we are acually interested in if if we are in a strudel2 environment
-# Since we can't easily tell if we are in strudel2 we will actually check if we are in slurm (PBS should be the same)
+# Originally developed for M3, what we are actually interested in if if we are in a Strudel2 environment
+# Since we can't easily tell if we are in Strudel2 we will actually check if we are in SLURM
 # Hardcode this to 'local' if you don't ever use an HPC cluster.
 if [[ -z "${SLURM_JOB_ID}" ]]; then
     HPC_ENV="local"
 else
     HPC_ENV="m3"
 fi
-    
+
+function port_in_use {
+    # iproute2, lsof and gawk are in the default Ubuntu 24.04 package list, so
+    # we should have one of these available.
+    local p="$1"
+    if command -v ss >/dev/null 2>&1; then
+        # Use ss if available (commonly installed via iproute2)
+        ss -ltn "sport = :${p}" -H | grep -q .
+        return $?
+    elif command -v lsof >/dev/null 2>&1; then
+        # Fallback to lsof
+        lsof -iTCP -sTCP:LISTEN -P -n 2>/dev/null | awk '{print $9}' | grep -Eo ':[0-9]+$' | cut -d: -f2 | grep -wq "${p}"
+        return $?
+    elif [ -r /proc/net/tcp ]; then
+        # parse /proc/net/tcp (ports are hex)
+        awk 'NR>1 {print $2}' /proc/net/tcp | cut -d: -f2 | while read -r hex; do printf "%d\n" 0x${hex}; done | grep -wq "${p}"
+        return $?
+    else
+        # If we can't determine, assume free
+        return 1
+    fi
+}
 
 function get_port {
-    # lsof doesn't return open ports for system services, so we use netstat
-    # until ! lsof -i -P -n | grep -qc ':'${PORT}' (LISTEN)';
-
-    until ! netstat -ln | grep "  LISTEN  " | grep -iEo  ":[0-9]+" | cut -d: -f2 | grep -wqc "${PORT}";
-    do
+    # Iterate until we find a port that is not in LISTEN state
+    until ! port_in_use "${PORT}"; do
         ((PORT++))
         echo "Checking port: ${PORT}"
     done
@@ -76,19 +86,17 @@ function get_port {
 
 # Make a dir name from the IMAGE
 IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
-R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/"
+R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}"
 RSTUDIO_DOT_LOCAL="${R_DIRS}/.local/share/rstudio"
 RSTUDIO_DOT_CONFIG="${R_DIRS}/.config/rstudio"
-RSTUDIO_HOME="${R_DIRS}/session"
 RSTUDIO_TMP="${R_DIRS}/tmp"
 R_LIBS_USER="${R_DIRS}/R"
-R_ENV_CACHE="${R_DIRS}/renv-local"
-mkdir -p "${RSTUDIO_HOME}"
+RENV_PATHS_ROOT="${R_DIRS}/renv-local"
 mkdir -p "${RSTUDIO_DOT_LOCAL}"
 mkdir -p "${RSTUDIO_DOT_CONFIG}"
 mkdir -p "${R_LIBS_USER}"
 mkdir -p "${RSTUDIO_TMP}/var/run"
-mkdir -p "${R_ENV_CACHE}"
+mkdir -p "${RENV_PATHS_ROOT}"
 
 # Set SINGULARITY_BIN to apptainer if it's on path, otherwise singularity
 if command -v apptainer >/dev/null 2>&1; then
@@ -106,6 +114,7 @@ else
     _cachedir=${HOME}/.apptainer/cache/
 fi
 
+# Filesystem binds specific to the M3 cluster
 if [[ $HPC_ENV == "m3" ]]; then
     BINDPATHS=("/fs02" "/fs03" "/fs04" "/scratch" "/scratch2" "/projects")
     SINGULARITY_BINDPATH=""
@@ -122,8 +131,10 @@ if [[ $HPC_ENV == "m3" ]]; then
     export APPTAINER_BINDPATH=${SINGULARITY_BINDPATH}
 fi
 
+
 echo "Getting required containers ... this may take a while ..."
 echo "  Storing image in ${_cachedir}"
+echo "  (you can change this location by setting APPTAINER_CACHEDIR)"
 # Test the image works, execute a no-op command
 ${SINGULARITY_BIN} exec "${IMAGE_LOCATION}" true
 
@@ -171,32 +182,35 @@ if [[ $HPC_ENV == 'm3' ]]; then
       # For Strudel
       echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json"
     fi
-    APPTAINERENV_PASSWORD="${PASSWORD}" \
-    SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
-                     --bind "${RSTUDIO_TMP}:/tmp" \
-                     --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
-                     --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
-                     --bind "${R_ENV_CACHE}:/home/rstudio/.local/share/renv" \
-                     --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
-                     --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
-                     --bind "${R_LIBS_USER}:/home/rstudio/R" \
-                     "${IMAGE_LOCATION}" \
-                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
-                     #--bind ${RSITELIB}:/usr/local/lib/R/site-library \
-else
-    APPTAINERENV_PASSWORD="${PASSWORD}" \
-    SINGULARITYENV_PASSWORD="${PASSWORD}" \
-    ${SINGULARITY_BIN} exec --bind "${RSTUDIO_HOME}:${HOME}/.rstudio" \
-                     --bind "${RSTUDIO_TMP}:/tmp" \
-                     --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
-                     --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
-                     --bind "${R_ENV_CACHE}:/home/rstudio/.local/share/renv" \
-                     --bind "${RSTUDIO_DOT_LOCAL}:/home/rstudio/.local/share/rstudio" \
-                     --bind "${RSTUDIO_DOT_CONFIG}:/home/rstudio/.config/rstudio" \
-                     --bind "${R_LIBS_USER}:/home/rstudio/R" \
-                     "${IMAGE_LOCATION}" \
-                     rserver --auth-none=1 --auth-pam-helper-path=pam-helper --www-port="${PORT}" --server-user="${USER}"
 fi
+
+${SINGULARITY_BIN} exec \
+    --cleanenv \
+    --env PASSWORD="${PASSWORD}" \
+    --env USER="${USER}" \
+    --env DEFAULT_USER="${USER}" \
+    --env LC_CTYPE="${LC_CTYPE}" \
+    --env LC_TIME="${LC_TIME}" \
+    --env LC_MONETARY="${LC_MONETARY}" \
+    --env LC_MESSAGES="${LC_MESSAGES}" \
+    --env LC_PAPER="${LC_PAPER}" \
+    --env LC_MEASUREMENT="${LC_MEASUREMENT}" \
+    --env HOSTNAME="${HOSTNAME}" \
+    --env APPTAINER_BINDPATH="${APPTAINER_BINDPATH}" \
+    --env SINGULARITY_BINDPATH="${SINGULARITY_BINDPATH}" \
+    --env RENV_PATHS_ROOT="${RENV_PATHS_ROOT}" \
+    --bind "/etc/passwd:/etc/passwd:ro" \
+    --bind "/etc/group:/etc/group:ro" \
+    --bind "${RSTUDIO_TMP}:/tmp" \
+    --bind "${RSTUDIO_TMP}/var:/var/lib/rstudio-server" \
+    --bind "${RSTUDIO_TMP}/var/run:/var/run/rstudio-server" \
+    --bind "${RSTUDIO_DOT_LOCAL}:${HOME}/.local/share/rstudio" \
+    --bind "${RSTUDIO_DOT_CONFIG}:${HOME}/.config/rstudio" \
+    --bind "${R_LIBS_USER}:${HOME}/R" \
+    "${IMAGE_LOCATION}" \
+        rserver --auth-none=1 \
+                --auth-pam-helper-path=pam-helper \
+                --www-port="${PORT}" \
+                --server-user="${USER}"
 
 printf 'rserver exited' 1>&2
