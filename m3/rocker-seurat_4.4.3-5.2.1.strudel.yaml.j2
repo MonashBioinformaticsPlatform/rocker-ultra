@@ -14,7 +14,7 @@ instactions:
     paramscmd: cat ~/.rstudio-rocker/rserver-{jobid}.json
     client:
       cmd: null
-      redir: ""
+      redir: "{tunnelid}/"
     states:
       - RUNNING
   - name: View log
