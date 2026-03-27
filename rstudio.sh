@@ -76,7 +76,7 @@ function get_port {
 
 # Make a dir name from the IMAGE
 IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
-R_DIRS="${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/"
+R_DIRS="${R_DIRS:-${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/}"
 RSTUDIO_DOT_LOCAL="${R_DIRS}/.local/share/rstudio"
 RSTUDIO_DOT_CONFIG="${R_DIRS}/.config/rstudio"
 RSTUDIO_HOME="${R_DIRS}/session"
