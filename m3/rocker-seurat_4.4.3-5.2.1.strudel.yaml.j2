@@ -7,13 +7,13 @@ startscript: |
 
   chmod +x ~/.strudel2/rstudio.sh
 
-  # put config/cache on scratch2 unless ~/.rstudio-rocker exists; leave R_DIRS unset if sacctmgr fails
+  # put config/cache on scratch2 unless ~/.rstudio-rocker already exists
   if [ ! -d "${HOME}/.rstudio-rocker" ]; then
-    if DEFAULT_ACCOUNT=$(sacctmgr -n -P show user "$USER" format=DefaultAccount 2>/dev/null) && [ -n "${DEFAULT_ACCOUNT}" ]; then
-      SCRATCH="/scratch2/${DEFAULT_ACCOUNT}/${USER}"
-      export R_DIRS="${SCRATCH}/.rstudio-rocker"
-      mkdir -p "${R_DIRS}"
-    fi
+    DEFAULT_ACCOUNT=$(sacctmgr -n -P show user "$USER" format=DefaultAccount)
+    SCRATCH="/scratch2/${DEFAULT_ACCOUNT}/${USER}"
+    export ROCKER_ULTRA_HOME="${SCRATCH}/.rstudio-rocker"
+    mkdir -p "${ROCKER_ULTRA_HOME}"
+    ln -sfn "${ROCKER_ULTRA_HOME}" "${HOME}/.rstudio-rocker"
   fi
 
   IMAGE=https://bioinformatics.erc.monash.edu/references/singularity/rocker-seurat_4.4.3-5.2.1-2.sif ~/.strudel2/rstudio.sh

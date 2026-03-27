@@ -76,7 +76,8 @@ function get_port {
 
 # Make a dir name from the IMAGE
 IMAGE_SLASHED=$(echo "${IMAGE}" | sed 's/:/\//g' | sed 's/\.\./__/g')
-R_DIRS="${R_DIRS:-${HOME}/.rstudio-rocker/${IMAGE_SLASHED}/}"
+ROCKER_ULTRA_HOME="${ROCKER_ULTRA_HOME:-${HOME}/.rstudio-rocker}"
+R_DIRS="${R_DIRS:-${ROCKER_ULTRA_HOME}/${IMAGE_SLASHED}/}"
 RSTUDIO_DOT_LOCAL="${R_DIRS}/.local/share/rstudio"
 RSTUDIO_DOT_CONFIG="${R_DIRS}/.config/rstudio"
 RSTUDIO_HOME="${R_DIRS}/session"
@@ -169,7 +170,7 @@ export LC_MEASUREMENT="C.UTF-8"
 if [[ $HPC_ENV == 'm3' ]]; then
     if [[ -n ${SLURM_JOB_ID} ]]; then
       # For Strudel
-      echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${HOME}/.rstudio-rocker/rserver-${SLURM_JOB_ID}.json"
+      echo '{"password":"'"${PASSWORD}"'", "port": '"${PORT}"'}' >"${ROCKER_ULTRA_HOME}/rserver-${SLURM_JOB_ID}.json"
     fi
     APPTAINERENV_PASSWORD="${PASSWORD}" \
     SINGULARITYENV_PASSWORD="${PASSWORD}" \
