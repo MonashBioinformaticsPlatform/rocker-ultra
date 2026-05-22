@@ -14,6 +14,8 @@ curl https://raw.githubusercontent.com/MonashBioinformaticsPlatform/rocker-ultra
 ```
 Reload your Studel Web page, you should see a new RStudio in the sidebar as an option.
 
+The first time you start an RStudio Server instance via Strudel you may find it takes a few minutes before it can sucessfully "Connect", while the container downloads in the background. If you get an error, give it a few minutes and try pressing the "Connect" button again. 
+
 _The example `rocker-seurat_*.strudel.yaml.j2` uses the `IMAGE` environment variable to pull the container image from an https:// URL - this is because I was finding the regular `singularity exec` / `pull` method slow and unreliable on the cluster. This might have been a temporary issue._
 
 ## Tunnelling to an M3 compute node
